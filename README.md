@@ -7,13 +7,13 @@ This is a fork of [CardinalPGM](https://github.com/twizmwazin/CardinalPGM) but w
 
 #### Why didn't you send a pull request to the original repo ?
 Because I planned to make CardinalPGM a plugin for a specific Minecraft server.
-
 Example : Name of the team everywhere, custom match report with team name, ...
 
 
 What I have changed from the original version
 ------
 
+1. Total New Match Statistics Page
 
 
 License
