@@ -199,7 +199,7 @@ public class Stats implements Module {
 
     public String uploadStats() {
         try {
-            HttpPost post = new HttpPost("http://m.twizmwaz.in/uploadmatch.php");
+            HttpPost post = new HttpPost("https://vps.alan736.ch/scrim/scrim.php");
             NameValuePair id = new BasicNameValuePair("id", GameHandler.getGameHandler().getMatch().getUuid().toString().replaceAll("-", ""));
             MultipartEntityBuilder fileBuilder = MultipartEntityBuilder.create().addBinaryBody("match", generateStats());
             fileBuilder.addPart(id.getName(), new StringBody(id.getValue(), ContentType.TEXT_HTML));

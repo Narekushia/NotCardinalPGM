@@ -2,5 +2,5 @@ name: ${plugin.name}
 description: ${project.description}
 main: ${plugin.mainClass}
 version: ${project.version}-${describe}
-authors: [twiz_mwazin]
-prefix: CardinalPGM
+authors: [twiz_mwazin, alan736]
+prefix: NotCardinalPGM
