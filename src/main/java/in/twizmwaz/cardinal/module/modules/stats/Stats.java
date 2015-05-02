@@ -110,7 +110,7 @@ public class Stats implements Module {
     public double getKdByPlayer(OfflinePlayer player) {
         double kd;
         if (player == null) return 0;
-        kd = getDeathsByPlayer(player) == 0 ? (double) getKillsByPlayer(player) : (double) getKillsByPlayer(player) / (double) getDeathsByPlayer(player);
+        kd = getDeathsByPlayer(player) == 0 ? (double) getKillsByPlayer(player) : ((double) getKillsByPlayer(player) / getDeathsByPlayer(player));
         return kd;
     }
 
@@ -182,7 +182,7 @@ public class Stats implements Module {
             for (Map.Entry<OfflinePlayer, TeamModule> entry : playerTeams.entrySet()) {
                 if (entry.getValue() == team) {
                     if (!team.isObserver()) {
-                        teams.appendElement("p").text(entry.getKey().getName() + ": Kills: " + getKillsByPlayer(entry.getKey()) + ", Deaths: " + getDeathsByPlayer(entry.getKey()) + ", KD: " + (Math.round(getKdByPlayer(entry.getKey()) / 100.0) * 100.0)).attr("class", "media-body");
+                        teams.appendElement("p").text(entry.getKey().getName() + ": Kills: " + getKillsByPlayer(entry.getKey()) + ", Deaths: " + getDeathsByPlayer(entry.getKey()) + ", KD: " + (Math.round(getKdByPlayer(entry.getKey()) * 100.0) / 100.0)).attr("class", "media-body");
                     }
                     else teams.appendElement("p").text(entry.getKey().getName());
                 }
