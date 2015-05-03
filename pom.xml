@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>in.twizmwaz.cardinal</groupId>
-    <artifactId>CardinalPGM</artifactId>
+    <artifactId>NotCardinalPGM</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <plugin.name>Cardinal</plugin.name>
+        <plugin.name>NotCardinal</plugin.name>
         <plugin.mainClass>in.twizmwaz.cardinal.Cardinal</plugin.mainClass>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

@@ -52,8 +52,8 @@ public class UpdateHandler {
 
         @Override
         public void run() {
-            if (UpdateHandler.getUpdateHandler().checkUpdates()) sender.sendMessage(ChatColor.GOLD + ChatConstant.UI_UPDATE_AVAILABLE.asMessage().getMessage(ChatUtils.getLocale(sender)));
-            else sender.sendMessage(ChatColor.GOLD + ChatConstant.UI_LATEST_VERSION.asMessage().getMessage(ChatUtils.getLocale(sender)));
+            /*if (UpdateHandler.getUpdateHandler().checkUpdates()) sender.sendMessage(ChatColor.GOLD + ChatConstant.UI_UPDATE_AVAILABLE.asMessage().getMessage(ChatUtils.getLocale(sender)));
+            else sender.sendMessage(ChatColor.GOLD + ChatConstant.UI_LATEST_VERSION.asMessage().getMessage(ChatUtils.getLocale(sender)));*/
         }
     }
 
