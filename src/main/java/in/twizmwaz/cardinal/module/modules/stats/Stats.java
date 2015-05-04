@@ -2,6 +2,7 @@ package in.twizmwaz.cardinal.module.modules.stats;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import in.twizmwaz.cardinal.Cardinal;
 import in.twizmwaz.cardinal.GameHandler;
 import in.twizmwaz.cardinal.chat.ChatConstant;
@@ -17,7 +18,9 @@ import in.twizmwaz.cardinal.module.modules.matchTimer.MatchTimer;
 import in.twizmwaz.cardinal.module.modules.matchTranscript.MatchTranscript;
 import in.twizmwaz.cardinal.module.modules.team.TeamModule;
 import in.twizmwaz.cardinal.settings.Settings;
+import in.twizmwaz.cardinal.util.StringUtils;
 import in.twizmwaz.cardinal.util.TeamUtils;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -48,6 +51,7 @@ public class Stats implements Module {
 
     private List<MatchTracker> stats;
     private Map<OfflinePlayer, TeamModule> playerTeams = Maps.newHashMap();
+    private String WinningTeam = "";
 
     protected Stats() {
         stats = Lists.newArrayList();
@@ -119,9 +123,10 @@ public class Stats implements Module {
      */
     @EventHandler
     public void onMatchEnd(MatchEndEvent event) {
+    	WinningTeam = event.getTeam().getName();
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (Settings.getSettingByName("Stats") != null && Settings.getSettingByName("Stats").getValueByPlayer(player).getValue().equalsIgnoreCase("on")) {
-                player.sendMessage(ChatColor.GRAY + "Kills: " + ChatColor.GREEN + getKillsByPlayer(player) + ChatColor.AQUA + " | " + ChatColor.GRAY + "Deaths: " + ChatColor.DARK_RED + getDeathsByPlayer(player) + ChatColor.AQUA + " | " + ChatColor.GRAY + "KD: " + ChatColor.GOLD + (Math.round(getKdByPlayer(player) / 100.0) * 100.0));
+                player.sendMessage(ChatColor.GRAY + "Kills: " + ChatColor.GREEN + getKillsByPlayer(player) + ChatColor.AQUA + " | " + ChatColor.GRAY + "Deaths: " + ChatColor.DARK_RED + getDeathsByPlayer(player) + ChatColor.AQUA + " | " + ChatColor.GRAY + "KD: " + ChatColor.GOLD + (Math.round(getKdByPlayer(player) * 100.0) / 100.0));
             }
         }
 
@@ -133,7 +138,7 @@ public class Stats implements Module {
                 	String result = uploadStats();
                 	if (result == null || result.contains("error"))
                     	global.sendLocalizedMessage(new UnlocalizedChatMessage(ChatColor.RED + "{0}", ChatConstant.UI_MATCH_REPORT_FAILED.asMessage()));
-                	else global.sendLocalizedMessage(new UnlocalizedChatMessage(ChatColor.GREEN + "{0}", ChatConstant.UI_MATCH_REPORT_SUCCESS.asMessage(new UnlocalizedChatMessage(result))));
+                	else global.sendLocalizedMessage(new UnlocalizedChatMessage(ChatColor.GREEN + "{0}", ChatConstant.UI_MATCH_REPORT_SUCCESS.asMessage(new UnlocalizedChatMessage(ChatColor.UNDERLINE + "" + result + "" + ChatColor.RESET))));
             	}
         	}, 20);
         }
@@ -162,29 +167,53 @@ public class Stats implements Module {
         File file = new File(GameHandler.getGameHandler().getMatchFile() + "/statistics.html");
         Document document = Jsoup.parse(file, "utf-8");
         for (Element element : document.getElementsContainingOwnText("%mapName")) {
-            element.text(element.text().replace("%mapName", GameHandler.getGameHandler().getMatch().getLoadedMap().getName()));
+            element.html(element.html().replace("%mapName", GameHandler.getGameHandler().getMatch().getLoadedMap().getName()).toString());
         }
         for (Element element : document.getElementsContainingOwnText("%date")) {
-            element.text(element.text().replace("%date", new Date().toString()));
+            element.html(element.html().replace("%date", new Date().toString()));
         }
         for (Element element : document.getElementsContainingOwnText("%kills")) {
-            element.text(element.text().replace("%kills", Integer.toString(getTotalKills())));
+            element.html(element.html().replace("%kills", Integer.toString(getTotalKills())));
         }
         for (Element element : document.getElementsContainingOwnText("%deaths")) {
-            element.text(element.text().replace("%deaths", Integer.toString(getTotalDeaths())));
+            element.html(element.html().replace("%deaths", Integer.toString(getTotalDeaths())));
         }
         for (Element element : document.getElementsContainingOwnText("%matchTime")) {
-            element.text(element.text().replace("%matchTime", Double.toString(GameHandler.getGameHandler().getMatch().getModules().getModule(MatchTimer.class).getEndTime())));
+            // element.text(element.text().replace("%matchTime", Double.toString(GameHandler.getGameHandler().getMatch().getModules().getModule(MatchTimer.class).getEndTime())));
+            element.html(element.html().replace("%matchTime", StringUtils.formatTime(GameHandler.getGameHandler().getMatch().getModules().getModule(MatchTimer.class).getEndTime())));
         }
+        
+        // Get map.png URL on maps.oc.tc
+        Document MapHTMLPage = Jsoup.connect("https://oc.tc/maps/" + GameHandler.getGameHandler().getMatch().getLoadedMap().getName().toLowerCase().replace(" ", "_")).get();
+        String MapURL = MapHTMLPage.select("img[src$=.png][class*=thumbnail]").attr("src");
+        MapURL = MapURL.replace(" ", "%20");
+        document.getElementById("mapimage").appendElement("img").attr("class", "ui medium rounded image").attr("src", MapURL).attr("alt", "Map thumbnail");
+        
         Element teams = document.getElementById("teams");
         for (TeamModule team : TeamUtils.getTeams()) {
-            teams.appendElement("h3").text(team.getName());
+        	
+        	Element TeamGrid = teams.appendElement("div").attr("class", "ui grid");
+        	Element TeamTitle =TeamGrid.appendElement("div").attr("class", "sixteen wide column").appendElement("span").attr("class", "ui large header").text(team.getName());
+            
+        	if(team.getName() == WinningTeam) 
+            	TeamTitle.appendElement("span").attr("class", "ui small green label").text("Winning Team");
+            else if (!team.isObserver())
+            	TeamTitle.appendElement("span").attr("class", "ui small red label").text("Losing Team");
+            
             for (Map.Entry<OfflinePlayer, TeamModule> entry : playerTeams.entrySet()) {
                 if (entry.getValue() == team) {
-                    if (!team.isObserver()) {
-                        teams.appendElement("p").text(entry.getKey().getName() + ": Kills: " + getKillsByPlayer(entry.getKey()) + ", Deaths: " + getDeathsByPlayer(entry.getKey()) + ", KD: " + (Math.round(getKdByPlayer(entry.getKey()) * 100.0) / 100.0)).attr("class", "media-body");
+                	Element PlayerItem = TeamGrid.appendElement("div").attr("class", "four wide column").appendElement("div").attr("class", "ui items").appendElement("div").attr("class", "item");
+                    PlayerItem.appendElement("div").attr("class", "image").attr("style", "width:32px;height:32px;").appendElement("img").attr("src", "https://avatar.oc.tc/" + entry.getKey().getName() + "/32@2x.png").attr("alt", "Avatar " + entry.getKey().getName());
+                    
+                    Element PlayerItemContent = PlayerItem.appendElement("div").attr("class", "content");
+                    PlayerItemContent.appendElement("div").attr("class", "header").text(entry.getKey().getName());
+                    
+                	if (!team.isObserver()) {
+                		Element PlayerItemDescription = PlayerItemContent.appendElement("div").attr("class", "description");
+                		PlayerItemDescription.appendElement("p").text("Kills: " + getKillsByPlayer(entry.getKey()));
+                		PlayerItemDescription.appendElement("p").text("Deaths: " + getDeathsByPlayer(entry.getKey()));
+                		PlayerItemDescription.appendElement("p").text("KD: " + (Math.round(getKdByPlayer(entry.getKey()) * 100.0) / 100.0));
                     }
-                    else teams.appendElement("p").text(entry.getKey().getName());
                 }
             }
         }

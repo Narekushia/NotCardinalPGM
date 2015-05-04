@@ -10,6 +10,7 @@
 
 <!-- Semantic UI hosted by CDNJS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.11.6/semantic.min.css">
+<link href='//fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
 
 <!-- Semantic UI js AND jQuery library -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -44,6 +45,15 @@ $('.menu .item').tab();
         font-size: 38.5px;
     }
 
+    #transcript pre {
+      background-color:#272822;
+      color:white;
+      padding:4px;
+      border-radius:3px;
+      font-family:'Droid Sans Mono';
+      font-size:12px;
+    }
+
     </style>
 </head>
 <body>
@@ -51,15 +61,14 @@ $('.menu .item').tab();
         <div class="row" id="main">
             <!-- MAP NAME -->
             <div class="sixteen wide column">
-                <h1 class="ui huge header">
+                <div class="ui huge header">
                     Match on %mapName
-                    <div class="sub header">%date</div>
-                </h1>
+                    <div class="sub header"> %date </div>
+                </div>
                 <div class="ui divider"></div>
             </div>
             <!-- MAP IMAGE -->
-            <div class="eight wide column">
-                <img class="ui medium rounded image" src="https://maps.oc.tc/404.png">
+            <div id="mapimage" class="eight wide column">
             </div>
             <!-- MATCH -->
             <div class="eight wide column">
