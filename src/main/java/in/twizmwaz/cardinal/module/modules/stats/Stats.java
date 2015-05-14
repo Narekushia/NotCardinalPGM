@@ -203,7 +203,7 @@ public class Stats implements Module {
             for (Map.Entry<OfflinePlayer, TeamModule> entry : playerTeams.entrySet()) {
                 if (entry.getValue() == team) {
                 	Element PlayerItem = TeamGrid.appendElement("div").attr("class", "four wide column").appendElement("div").attr("class", "ui items").appendElement("div").attr("class", "item");
-                    PlayerItem.appendElement("div").attr("class", "image").attr("style", "width:32px;height:32px;").appendElement("img").attr("src", "https://avatar.oc.tc/" + entry.getKey().getName() + "/32@2x.png").attr("alt", "Avatar " + entry.getKey().getName());
+                    PlayerItem.appendElement("div").attr("class", "image").attr("style", "width:32px;height:32px;").appendElement("img").attr("src", "https://crafatar.com/avatars/" + entry.getKey().getName() + "?helm&size=64").attr("alt", "Avatar " + entry.getKey().getName());
                     
                     Element PlayerItemContent = PlayerItem.appendElement("div").attr("class", "content");
                     PlayerItemContent.appendElement("div").attr("class", "header").text(entry.getKey().getName());

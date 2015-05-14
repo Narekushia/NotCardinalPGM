@@ -110,7 +110,7 @@ public class Cardinal extends JavaPlugin {
                 database = Database.loadFromFile(databaseFile);
             } catch (JDOMException | IOException e) {
                 e.printStackTrace();
-                Bukkit.getLogger().log(Level.SEVERE, "CardinalPGM failed to initialize because of an IOException. Please try restarting your server.");
+                Bukkit.getLogger().log(Level.SEVERE, "NotCardinalPGM failed to initialize because of an IOException. Please try restarting your server.");
                 this.setEnabled(false);
                 return;
             }
@@ -121,7 +121,7 @@ public class Cardinal extends JavaPlugin {
         config.options().copyDefaults(true);
         saveConfig();
         if (config.getBoolean("deleteMatches")) {
-            Bukkit.getLogger().log(Level.INFO, "[CardinalPGM] Deleting match files, this can be disabled via the configuration");
+            Bukkit.getLogger().log(Level.INFO, "[NotCardinalPGM] Deleting match files, this can be disabled via the configuration");
             File matches = new File("matches/");
             try {
                 FileUtils.deleteDirectory(matches);
@@ -153,7 +153,7 @@ public class Cardinal extends JavaPlugin {
         try {
             gameHandler = new GameHandler();
         } catch (RotationLoadException e) {
-            Bukkit.getLogger().log(Level.SEVERE, "CardinalPGM failed to initialize because of an invalid rotation configuration.");
+            Bukkit.getLogger().log(Level.SEVERE, "NotCardinalPGM failed to initialize because of an invalid rotation configuration.");
             setEnabled(false);
             return;
         }

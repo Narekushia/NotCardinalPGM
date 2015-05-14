@@ -10,24 +10,19 @@ import java.net.URL;
 public class GitUtils {
 
     public static String getLatestGitRevision() {
-        /* try {
+        try {
              JsonParser parser = new JsonParser();
-            JsonElement jsonElement = parser.parse(new InputStreamReader(new URL("https://api.github.com/repos/twizmwazin/CardinalPGM/git/refs/heads/master").openStream()));
+            JsonElement jsonElement = parser.parse(new InputStreamReader(new URL("https://api.github.com/repos/alan736/NotCardinalPGM/git/refs/heads/master").openStream()));
             return jsonElement.getAsJsonObject().getAsJsonObject("object").get("sha").getAsString(); 
-        	 return null;
         } catch (IOException e) {
-            e.printStackTrace(); */
+            e.printStackTrace();
             return null;
-        // }
+        }
     }
 
     public static String getUpdateMessage(String url) throws IOException {
-       /* JsonParser parser = new JsonParser();
+        JsonParser parser = new JsonParser();
         JsonElement jsonElement = parser.parse(new InputStreamReader(new URL(url).openStream()));
-        return jsonElement.toString(); */
-    	return null;
+        return jsonElement.toString();
     }
-
-
-
 }

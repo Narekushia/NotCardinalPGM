@@ -6,6 +6,7 @@ import in.twizmwaz.cardinal.util.GitUtils;
 import net.minecraft.server.v1_8_R1.ChatSerializer;
 import net.minecraft.server.v1_8_R1.IChatBaseComponent;
 import net.minecraft.server.v1_8_R1.PacketPlayOutChat;
+
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer;
 import org.bukkit.event.EventHandler;
@@ -28,11 +29,12 @@ public class UpdateNotification implements Module {
         Bukkit.getScheduler().runTaskAsynchronously(Cardinal.getInstance(), new Runnable() {
             @Override
             public void run() {
-                try {
+                /*try {
+                	
                     IChatBaseComponent chat = ChatSerializer.a(GitUtils.getUpdateMessage(notification));
                     PacketPlayOutChat packet = new PacketPlayOutChat(chat);
                     ((CraftPlayer) event.getPlayer()).getHandle().playerConnection.sendPacket(packet);
-                } catch (IOException ignored) {}
+                } catch (IOException ignored) {}*/
             }
         });
     }
