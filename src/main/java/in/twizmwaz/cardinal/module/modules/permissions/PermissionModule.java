@@ -4,6 +4,7 @@ import in.twizmwaz.cardinal.Cardinal;
 import in.twizmwaz.cardinal.GameHandler;
 import in.twizmwaz.cardinal.event.*;
 import in.twizmwaz.cardinal.module.Module;
+import in.twizmwaz.cardinal.rank.Rank;
 import in.twizmwaz.cardinal.util.TeamUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,7 +25,7 @@ public class PermissionModule implements Module {
     private final Plugin plugin;
     private final Map<Player, PermissionAttachment> attachmentMap;
 
-    private List<UUID> developers = Arrays.asList(UUID.fromString("670223bb-7560-48c8-8f01-2f463549b917") /* twiz_mwazin */, UUID.fromString("33a703d0-3237-4337-9ddd-3dbf33b3d8a6") /* iEli2tyree011 */, UUID.fromString("208c84af-790a-41da-bf7e-eb184f17bdf8") /* Elly */, UUID.fromString("260004f0-996b-4539-ba21-df4ee6336b63") /* Elliott_ */, UUID.fromString("acf01bbf-e03a-4cca-827f-11e70b4977a5") /* alan736 */);
+    private List<UUID> developers = Arrays.asList(UUID.fromString("670223bb-7560-48c8-8f01-2f463549b917") /* twiz_mwazin */, UUID.fromString("33a703d0-3237-4337-9ddd-3dbf33b3d8a6") /* iEli2tyree011 */, UUID.fromString("208c84af-790a-41da-bf7e-eb184f17bdf8") /* Elly */, UUID.fromString("260004f0-996b-4539-ba21-df4ee6336b63") /* Elliott_ */);
     private List<OfflinePlayer> muted = new ArrayList<>();
 
     public PermissionModule(Plugin plugin) {
@@ -164,20 +165,19 @@ public class PermissionModule implements Module {
     }
 
     @EventHandler
-    public void onPlayerNameUpdate(RankChangeEvent event) {
-        String star = "\u2756";
-        String stars = "";
-        event.getPlayer().setDisplayName(stars + event.getTeam().getColor() + event.getPlayer().getName());
-        event.getPlayer().setPlayerListName(stars + event.getTeam().getColor() + event.getPlayer().getName());
+    public void onRankChange(RankChangeEvent event) {
+        String prefix = Rank.getPlayerPrefix(event.getPlayer().getUniqueId());
+        event.getPlayer().setDisplayName(prefix + event.getTeam().getColor() + event.getPlayer().getName());
+        event.getPlayer().setPlayerListName(prefix + event.getTeam().getColor() + event.getPlayer().getName());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerChangeTeam2(PlayerChangeTeamEvent event) {
+    public void onPlayerChangeTeamRank(PlayerChangeTeamEvent event) {
         Bukkit.getServer().getPluginManager().callEvent(new RankChangeEvent(event.getPlayer(), event.getNewTeam()));
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerJoin2(PlayerJoinEvent event) {
+    public void onPlayerJoinRank(PlayerJoinEvent event) {
         Bukkit.getServer().getPluginManager().callEvent(new RankChangeEvent(event.getPlayer()));
     }
 
