@@ -16,6 +16,7 @@ What I have changed from the original version
 1. Total New Match Statistics Page
 2. Redirect statistics page on my server
 3. Custom MOTD
+4. Sound for monument modes
 
 
 License
