@@ -5,11 +5,6 @@ What is this ?
 ------
 This is a fork of [CardinalPGM](https://github.com/twizmwazin/CardinalPGM) but with my own features.
 
-#### Why didn't you send a pull request to the original repo ?
-Because I planned to make CardinalPGM a plugin for a specific Minecraft server.
-Example : Name of the team everywhere, custom match report with team name, ...
-
-
 What I have changed from the original version
 ------
 
@@ -18,6 +13,11 @@ What I have changed from the original version
 3. Custom MOTD
 4. Sound for monument modes
 
+Download
+------
+Yes, You can have NotCardinalPGM without compiling the code ! Please check for update regulary with the ingame command "/cardinal"
+
+Download : [vps.alan736.ch/ci/](https://vps.alan736.ch/ci/job/NotCardinalPGM/lastSuccessfulBuild/)
 
 License
 ------
