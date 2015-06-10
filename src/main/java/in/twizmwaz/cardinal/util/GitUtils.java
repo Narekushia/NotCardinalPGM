@@ -11,9 +11,9 @@ public class GitUtils {
 
     public static String getLatestGitRevision() {
         try {
-             JsonParser parser = new JsonParser();
-            JsonElement jsonElement = parser.parse(new InputStreamReader(new URL("https://api.github.com/repos/alan736/NotCardinalPGM/git/refs/heads/master").openStream()));
-            return jsonElement.getAsJsonObject().getAsJsonObject("object").get("sha").getAsString(); 
+            JsonParser parser = new JsonParser();
+            JsonElement jsonElement = parser.parse(new InputStreamReader(new URL("https://api.github.com/repos/twizmwazin/CardinalPGM/git/refs/heads/master").openStream()));
+            return jsonElement.getAsJsonObject().getAsJsonObject("object").get("sha").getAsString();
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -25,4 +25,6 @@ public class GitUtils {
         JsonElement jsonElement = parser.parse(new InputStreamReader(new URL(url).openStream()));
         return jsonElement.toString();
     }
+
+
 }

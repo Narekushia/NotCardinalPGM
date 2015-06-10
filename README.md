@@ -15,7 +15,7 @@ What I have changed from the original version
 
 Download
 ------
-Yes, You can have NotCardinalPGM without compiling the code ! Please check for update regulary with the ingame command "/cardinal"
+Yes, You can have NotCardinalPGM without compiling the code ! Please check for update regulary with the ingame command `/cardinal`
 
 Download : [vps.alan736.ch/ci/](https://vps.alan736.ch/ci/job/NotCardinalPGM/lastSuccessfulBuild/)
 

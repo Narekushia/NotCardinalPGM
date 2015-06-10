@@ -2,7 +2,6 @@ package in.twizmwaz.cardinal.module.modules.stats;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import in.twizmwaz.cardinal.Cardinal;
 import in.twizmwaz.cardinal.GameHandler;
 import in.twizmwaz.cardinal.chat.ChatConstant;
@@ -18,9 +17,7 @@ import in.twizmwaz.cardinal.module.modules.matchTimer.MatchTimer;
 import in.twizmwaz.cardinal.module.modules.matchTranscript.MatchTranscript;
 import in.twizmwaz.cardinal.module.modules.team.TeamModule;
 import in.twizmwaz.cardinal.settings.Settings;
-import in.twizmwaz.cardinal.util.StringUtils;
 import in.twizmwaz.cardinal.util.TeamUtils;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -41,7 +38,12 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +53,6 @@ public class Stats implements Module {
 
     private List<MatchTracker> stats;
     private Map<OfflinePlayer, TeamModule> playerTeams = Maps.newHashMap();
-    private String WinningTeam = "";
 
     protected Stats() {
         stats = Lists.newArrayList();
@@ -114,7 +115,7 @@ public class Stats implements Module {
     public double getKdByPlayer(OfflinePlayer player) {
         double kd;
         if (player == null) return 0;
-        kd = getDeathsByPlayer(player) == 0 ? (double) getKillsByPlayer(player) : ((double) getKillsByPlayer(player) / getDeathsByPlayer(player));
+        kd = getDeathsByPlayer(player) == 0 ? (double) getKillsByPlayer(player) : (double) getKillsByPlayer(player) / (double) getDeathsByPlayer(player);
         return kd;
     }
 
@@ -123,24 +124,24 @@ public class Stats implements Module {
      */
     @EventHandler
     public void onMatchEnd(MatchEndEvent event) {
-    	WinningTeam = event.getTeam().getName();
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (Settings.getSettingByName("Stats") != null && Settings.getSettingByName("Stats").getValueByPlayer(player).getValue().equalsIgnoreCase("on")) {
-                player.sendMessage(ChatColor.GRAY + "Kills: " + ChatColor.GREEN + getKillsByPlayer(player) + ChatColor.AQUA + " | " + ChatColor.GRAY + "Deaths: " + ChatColor.DARK_RED + getDeathsByPlayer(player) + ChatColor.AQUA + " | " + ChatColor.GRAY + "KD: " + ChatColor.GOLD + (Math.round(getKdByPlayer(player) * 100.0) / 100.0));
+                player.sendMessage(ChatColor.GRAY + "Kills: " + ChatColor.GREEN + getKillsByPlayer(player) + ChatColor.AQUA + " | " + ChatColor.GRAY + "Deaths: " + ChatColor.DARK_RED + getDeathsByPlayer(player) + ChatColor.AQUA + " | " + ChatColor.GRAY + "KD: " + ChatColor.GOLD + (Math.round(getKdByPlayer(player) / 100.0) * 100.0));
             }
         }
 
         if (Cardinal.getInstance().getConfig().getBoolean("html.upload")) {
-        	Bukkit.getScheduler().scheduleSyncDelayedTask(GameHandler.getGameHandler().getPlugin(), new Runnable() {
-            	public void run() {
-                	ChatChannelModule global = GameHandler.getGameHandler().getMatch().getModules().getModule(GlobalChannel.class);
-                	global.sendLocalizedMessage(new UnlocalizedChatMessage(ChatColor.GOLD + "{0}", ChatConstant.UI_MATCH_REPORT_UPLOAD.asMessage()));
-                	String result = uploadStats();
-                	if (result == null || result.contains("error"))
-                    	global.sendLocalizedMessage(new UnlocalizedChatMessage(ChatColor.RED + "{0}", ChatConstant.UI_MATCH_REPORT_FAILED.asMessage()));
-                	else global.sendLocalizedMessage(new UnlocalizedChatMessage(ChatColor.GREEN + "{0}", ChatConstant.UI_MATCH_REPORT_SUCCESS.asMessage(new UnlocalizedChatMessage(ChatColor.UNDERLINE + "" + result + "" + ChatColor.RESET))));
-            	}
-        	}, 20);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(GameHandler.getGameHandler().getPlugin(), new Runnable() {
+                public void run() {
+                    ChatChannelModule global = GameHandler.getGameHandler().getMatch().getModules().getModule(GlobalChannel.class);
+                    global.sendLocalizedMessage(new UnlocalizedChatMessage(ChatColor.GOLD + "{0}", ChatConstant.UI_MATCH_REPORT_UPLOAD.asMessage()));
+                    String result = uploadStats();
+                    if (result == null || result.contains("error"))
+                        global.sendLocalizedMessage(new UnlocalizedChatMessage(ChatColor.RED + "{0}", ChatConstant.UI_MATCH_REPORT_FAILED.asMessage()));
+                    else
+                        global.sendLocalizedMessage(new UnlocalizedChatMessage(ChatColor.GREEN + "{0}", ChatConstant.UI_MATCH_REPORT_SUCCESS.asMessage(new UnlocalizedChatMessage(result))));
+                }
+            }, 20);
         }
     }
 

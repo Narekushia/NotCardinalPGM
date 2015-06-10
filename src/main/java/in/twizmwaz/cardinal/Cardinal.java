@@ -1,7 +1,13 @@
 package in.twizmwaz.cardinal;
 
 import com.sk89q.bukkit.util.CommandsManagerRegistration;
-import com.sk89q.minecraft.util.commands.*;
+import com.sk89q.minecraft.util.commands.ChatColor;
+import com.sk89q.minecraft.util.commands.CommandException;
+import com.sk89q.minecraft.util.commands.CommandPermissionsException;
+import com.sk89q.minecraft.util.commands.CommandUsageException;
+import com.sk89q.minecraft.util.commands.CommandsManager;
+import com.sk89q.minecraft.util.commands.MissingNestedCommandException;
+import com.sk89q.minecraft.util.commands.WrappedCommandException;
 import in.twizmwaz.cardinal.chat.ChatConstant;
 import in.twizmwaz.cardinal.chat.LocaleHandler;
 import in.twizmwaz.cardinal.chat.LocalizedChatMessage;
@@ -27,11 +33,27 @@ import java.util.logging.Level;
 
 public class Cardinal extends JavaPlugin {
 
+    private final static String CRAFTBUKKIT_VERSION = "v1_8_R1";
+    private final static String MINECRAFT_VERSION = "1.8.0";
+
     private static Cardinal instance;
     private static GameHandler gameHandler;
     private static LocaleHandler localeHandler;
-    private CommandsManager<CommandSender> commands;
     private static Database database;
+    private CommandsManager<CommandSender> commands;
+    private File databaseFile;
+
+    public static LocaleHandler getLocaleHandler() {
+        return localeHandler;
+    }
+
+    public static Cardinal getInstance() {
+        return instance;
+    }
+
+    public static Database getCardinalDatabase() {
+        return database;
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -94,9 +116,21 @@ public class Cardinal extends JavaPlugin {
         cmdRegister.register(BroadcastCommands.class);
     }
 
+    private void checkCraftVersion() {
+        String craftVer = Bukkit.getServer().getClass().getPackage().getName();
+        if (!("org.bukkit.craftbukkit." + CRAFTBUKKIT_VERSION).equals(craftVer)) {
+            getLogger().warning("########################################");
+            getLogger().warning("#####  YOUR VERSION OF SPORTBUKKIT #####");
+            getLogger().warning("#####  IS NOT SUPPORTED. PLEASE    #####");
+            getLogger().warning("#####  USE  SPORTBUKKIT " + MINECRAFT_VERSION + "      #####");
+            getLogger().warning("########################################");
+        }
+    }
+
     @Override
     public void onEnable() {
         instance = this;
+        checkCraftVersion();
         try {
             localeHandler = new LocaleHandler(this);
         } catch (IOException | JDOMException e) {
@@ -104,13 +138,13 @@ public class Cardinal extends JavaPlugin {
             this.setEnabled(false);
             return;
         }
-        File databaseFile = new File(getDataFolder(), "database.xml");
+        databaseFile = new File(getDataFolder(), "database.xml");
         if (databaseFile.exists()) {
             try {
                 database = Database.loadFromFile(databaseFile);
             } catch (JDOMException | IOException e) {
                 e.printStackTrace();
-                Bukkit.getLogger().log(Level.SEVERE, "NotCardinalPGM failed to initialize because of an IOException. Please try restarting your server.");
+                Bukkit.getLogger().log(Level.SEVERE, "CardinalPGM failed to initialize because of an IOException. Please try restarting your server.");
                 this.setEnabled(false);
                 return;
             }
@@ -121,7 +155,7 @@ public class Cardinal extends JavaPlugin {
         config.options().copyDefaults(true);
         saveConfig();
         if (config.getBoolean("deleteMatches")) {
-            Bukkit.getLogger().log(Level.INFO, "[NotCardinalPGM] Deleting match files, this can be disabled via the configuration");
+            Bukkit.getLogger().log(Level.INFO, "[CardinalPGM] Deleting match files, this can be disabled via the configuration");
             File matches = new File("matches/");
             try {
                 FileUtils.deleteDirectory(matches);
@@ -140,10 +174,12 @@ public class Cardinal extends JavaPlugin {
                         names.add(alias.trim());
                     }
                 }
-                if (config.contains("setting." + settingName + ".description")) description = config.getString("setting." + settingName + ".description");
+                if (config.contains("setting." + settingName + ".description"))
+                    description = config.getString("setting." + settingName + ".description");
                 if (config.contains("setting." + settingName + ".values")) {
                     for (String valueName : config.getStringList("setting." + settingName + ".values")) {
-                        if (valueName.endsWith("[default]")) values.add(new SettingValue(valueName.trim().substring(0, valueName.length() - 9), true));
+                        if (valueName.endsWith("[default]"))
+                            values.add(new SettingValue(valueName.trim().substring(0, valueName.length() - 9), true));
                         else values.add(new SettingValue(valueName.trim(), false));
                     }
                 }
@@ -153,34 +189,23 @@ public class Cardinal extends JavaPlugin {
         try {
             gameHandler = new GameHandler();
         } catch (RotationLoadException e) {
-            Bukkit.getLogger().log(Level.SEVERE, "NotCardinalPGM failed to initialize because of an invalid rotation configuration.");
+            Bukkit.getLogger().log(Level.SEVERE, "CardinalPGM failed to initialize because of an invalid rotation configuration.");
             setEnabled(false);
             return;
         }
         setupCommands();
     }
-    
+
     @Override
     public void onDisable() {
+        database.save(databaseFile);
     }
 
     public GameHandler getGameHandler() {
         return gameHandler;
     }
 
-    public static LocaleHandler getLocaleHandler() {
-        return localeHandler;
-    }
-
     public JavaPlugin getPlugin() {
         return this;
-    }
-
-    public static Cardinal getInstance() {
-        return instance;
-    }
-    
-    public static Database getCardinalDatabase() {
-        return database;
     }
 }
