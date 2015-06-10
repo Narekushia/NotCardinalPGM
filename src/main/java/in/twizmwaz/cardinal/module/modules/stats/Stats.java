@@ -2,6 +2,7 @@ package in.twizmwaz.cardinal.module.modules.stats;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import in.twizmwaz.cardinal.Cardinal;
 import in.twizmwaz.cardinal.GameHandler;
 import in.twizmwaz.cardinal.chat.ChatConstant;
@@ -17,7 +18,9 @@ import in.twizmwaz.cardinal.module.modules.matchTimer.MatchTimer;
 import in.twizmwaz.cardinal.module.modules.matchTranscript.MatchTranscript;
 import in.twizmwaz.cardinal.module.modules.team.TeamModule;
 import in.twizmwaz.cardinal.settings.Settings;
+import in.twizmwaz.cardinal.util.StringUtils;
 import in.twizmwaz.cardinal.util.TeamUtils;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -50,9 +53,9 @@ import java.util.Map;
 
 public class Stats implements Module {
 
-
     private List<MatchTracker> stats;
     private Map<OfflinePlayer, TeamModule> playerTeams = Maps.newHashMap();
+	private String WinningTeam = "";
 
     protected Stats() {
         stats = Lists.newArrayList();
@@ -124,6 +127,7 @@ public class Stats implements Module {
      */
     @EventHandler
     public void onMatchEnd(MatchEndEvent event) {
+    	WinningTeam = event.getTeam().getName();
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (Settings.getSettingByName("Stats") != null && Settings.getSettingByName("Stats").getValueByPlayer(player).getValue().equalsIgnoreCase("on")) {
                 player.sendMessage(ChatColor.GRAY + "Kills: " + ChatColor.GREEN + getKillsByPlayer(player) + ChatColor.AQUA + " | " + ChatColor.GRAY + "Deaths: " + ChatColor.DARK_RED + getDeathsByPlayer(player) + ChatColor.AQUA + " | " + ChatColor.GRAY + "KD: " + ChatColor.GOLD + (Math.round(getKdByPlayer(player) / 100.0) * 100.0));
