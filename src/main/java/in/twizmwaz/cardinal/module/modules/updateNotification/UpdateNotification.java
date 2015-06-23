@@ -23,6 +23,7 @@ public class UpdateNotification implements Module {
 
     @EventHandler
     public void onPlayerJoin(final PlayerJoinEvent event) {
+    	/*
         Bukkit.getScheduler().runTaskAsynchronously(Cardinal.getInstance(), new Runnable() {
             @Override
             public void run() {
@@ -32,7 +33,7 @@ public class UpdateNotification implements Module {
                 } catch (IOException ignored) {
                 }
             }
-        });
+        });*/
     }
 
 }
