@@ -1,5 +1,6 @@
 package in.twizmwaz.cardinal.match;
 
+import com.google.common.base.Optional;
 import in.twizmwaz.cardinal.Cardinal;
 import in.twizmwaz.cardinal.GameHandler;
 import in.twizmwaz.cardinal.event.MatchEndEvent;
@@ -9,8 +10,10 @@ import in.twizmwaz.cardinal.module.ModuleLoadTime;
 import in.twizmwaz.cardinal.module.modules.startTimer.StartTimer;
 import in.twizmwaz.cardinal.module.modules.team.TeamModule;
 import in.twizmwaz.cardinal.rotation.LoadedMap;
-import in.twizmwaz.cardinal.util.DomUtils;
+import in.twizmwaz.cardinal.util.DomUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 
@@ -34,7 +37,7 @@ public class Match {
         this.uuid = id;
         this.modules = new ModuleCollection<>();
         try {
-            this.document = DomUtils.parse(new File(map.getFolder() + "/map.xml"));
+            this.document = DomUtil.parse(new File(map.getFolder() + "/map.xml"));
         } catch (JDOMException | IOException e) {
             e.printStackTrace();
         }
@@ -95,7 +98,22 @@ public class Match {
     public void end(TeamModule team) {
         if (getState() == MatchState.PLAYING) {
             state = MatchState.ENDED;
-            Bukkit.getServer().getPluginManager().callEvent(new MatchEndEvent(team));
+            Event event = new MatchEndEvent(team == null ? Optional.<TeamModule>absent() : Optional.of(team));
+            Bukkit.getServer().getPluginManager().callEvent(event);
+        }
+    }
+
+    public void end(Player player) {
+        if (getState() == MatchState.PLAYING) {
+            state = MatchState.ENDED;
+            Bukkit.getServer().getPluginManager().callEvent(new MatchEndEvent(player));
+        }
+    }
+
+    public void end() {
+        if (getState() == MatchState.PLAYING) {
+            state = MatchState.ENDED;
+            Bukkit.getServer().getPluginManager().callEvent(new MatchEndEvent(Optional.<TeamModule>absent()));
         }
     }
 

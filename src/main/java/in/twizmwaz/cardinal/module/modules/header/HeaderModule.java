@@ -11,8 +11,8 @@ import in.twizmwaz.cardinal.module.TaskedModule;
 import in.twizmwaz.cardinal.module.modules.matchTimer.MatchTimer;
 import in.twizmwaz.cardinal.rotation.LoadedMap;
 import in.twizmwaz.cardinal.util.Contributor;
-import in.twizmwaz.cardinal.util.PlayerUtils;
-import in.twizmwaz.cardinal.util.StringUtils;
+import in.twizmwaz.cardinal.util.Players;
+import in.twizmwaz.cardinal.util.Strings;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -33,7 +33,7 @@ public class HeaderModule implements TaskedModule {
 
     public HeaderModule(LoadedMap map) {
         this.last = 0;
-        this.message = Cardinal.getInstance().getConfig().getString("server-message");
+        this.message = ChatColor.translateAlternateColorCodes('`', Cardinal.getInstance().getConfig().getString("server-message"));
         this.header = new UnlocalizedChatMessage(ChatColor.AQUA.toString() + ChatColor.BOLD + map.getName() + ChatColor.RESET.toString() + ChatColor.DARK_GRAY + " {0} {1}", ChatConstant.MISC_BY.asMessage(), assembleAuthors(map.getAuthors()));
     }
 
@@ -88,7 +88,7 @@ public class HeaderModule implements TaskedModule {
                 .append(ChatConstant.UI_TIME.getMessage(locale))
                 .append(": ")
                 .append(GameHandler.getGameHandler().getMatch().isRunning() ? ChatColor.GREEN : ChatColor.GOLD)
-                .append(StringUtils.formatTime(MatchTimer.getTimeInSeconds()))
+                .append(Strings.formatTime(MatchTimer.getTimeInSeconds()))
                 .append(ChatColor.DARK_GRAY)
                 .append(" - ")
                 .append(ChatColor.WHITE)
@@ -102,20 +102,21 @@ public class HeaderModule implements TaskedModule {
         if (authors.size() == 1) builder.append(ChatColor.GRAY).append(authors.get(0).getName());
         else if (authors.size() > 1) {
             for (Contributor author : authors) {
-                OfflinePlayer player = null;
-                if (author.getUniqueId() != null) 
+                OfflinePlayer player;
+                if (author.getUniqueId() != null)
                     player = Bukkit.getOfflinePlayer(author.getUniqueId());
-                else 
-                    player = Bukkit.getOfflinePlayer(author.getName());   
+                else
+                    player = Bukkit.getOfflinePlayer(author.getName());
                 if (authors.indexOf(author) < authors.size() - 2) {
-                    builder.append(PlayerUtils.getColoredName(player)).append(ChatColor.DARK_GRAY).append(", ");
+                    builder.append(Players.getName(player)).append(ChatColor.DARK_GRAY).append(", ");
                 } else if (authors.indexOf(author) == authors.size() - 2) {
-                    builder.append(PlayerUtils.getColoredName(player)).append(ChatColor.DARK_GRAY).append(" {0} ");
+                    builder.append(Players.getName(player)).append(ChatColor.DARK_GRAY).append(" {0} ");
                 } else if (authors.indexOf(author) == authors.size() - 1) {
-                    builder.append(PlayerUtils.getColoredName(player));
+                    builder.append(Players.getName(player));
                 }
             }
         }
         return new UnlocalizedChatMessage(builder.toString(), ChatConstant.MISC_AND.asMessage());
     }
+
 }

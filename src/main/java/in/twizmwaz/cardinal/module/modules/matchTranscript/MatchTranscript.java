@@ -1,6 +1,7 @@
 package in.twizmwaz.cardinal.module.modules.matchTranscript;
 
 import com.sk89q.minecraft.util.commands.ChatColor;
+
 import in.twizmwaz.cardinal.Cardinal;
 import in.twizmwaz.cardinal.chat.ChatConstant;
 import in.twizmwaz.cardinal.chat.LocalizedChatMessage;
@@ -10,7 +11,8 @@ import in.twizmwaz.cardinal.module.Module;
 import in.twizmwaz.cardinal.module.modules.cores.CoreObjective;
 import in.twizmwaz.cardinal.module.modules.destroyable.DestroyableObjective;
 import in.twizmwaz.cardinal.module.modules.wools.WoolObjective;
-import in.twizmwaz.cardinal.util.TeamUtils;
+import in.twizmwaz.cardinal.util.Teams;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 
@@ -58,11 +60,11 @@ public class MatchTranscript implements Module {
     public void onObjectiveTouch(ObjectiveTouchEvent event) {
         if (event.getObjective().showOnScoreboard() && event.displayTouchMessage()) {
             if (event.getObjective() instanceof WoolObjective) {
-                log(new LocalizedChatMessage(ChatConstant.UI_OBJECTIVE_PICKED_FOR, event.getPlayer().getName(), event.getObjective().getName().toUpperCase().replaceAll("_", " "), TeamUtils.getTeamByPlayer(event.getPlayer()).getName()).getMessage(Locale.getDefault().toString()));
+            //    log(new LocalizedChatMessage(ChatConstant.UI_OBJECTIVE_PICKED_FOR, event.getPlayer().getName(), event.getObjective().getName().toUpperCase().replaceAll("_", " "), Teams.getTeamByPlayer(event.getPlayer()).getName()).getMessage(Locale.getDefault().toString()));
             } else if (event.getObjective() instanceof CoreObjective) {
-                log(new LocalizedChatMessage(ChatConstant.UI_OBJECTIVE_TOUCHED_FOR, event.getPlayer().getName(), event.getObjective().getName(), TeamUtils.getTeamByPlayer(event.getPlayer()).getName()).getMessage(Locale.getDefault().toString()));
+            //    log(new LocalizedChatMessage(ChatConstant.UI_OBJECTIVE_TOUCHED_FOR, event.getPlayer().getName(), event.getObjective().getName(), Teams.getTeamByPlayer(event.getPlayer()).getName()).getMessage(Locale.getDefault().toString()));
             } else if (event.getObjective() instanceof DestroyableObjective) {
-                log(new LocalizedChatMessage(ChatConstant.UI_OBJECTIVE_DAMAGED_FOR, event.getPlayer().getName(), event.getObjective().getName(), TeamUtils.getTeamByPlayer(event.getPlayer()).getName()).getMessage(Locale.getDefault().toString()));
+            //   log(new LocalizedChatMessage(ChatConstant.UI_OBJECTIVE_DAMAGED_FOR, event.getPlayer().getName(), event.getObjective().getName(), Teams.getTeamByPlayer(event.getPlayer()).getName()).getMessage(Locale.getDefault().toString()));
             }
         }
     }

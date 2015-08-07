@@ -5,8 +5,8 @@ import in.twizmwaz.cardinal.chat.ChatConstant;
 import in.twizmwaz.cardinal.chat.LocalizedChatMessage;
 import in.twizmwaz.cardinal.event.PlayerChangeTeamEvent;
 import in.twizmwaz.cardinal.module.Module;
-import in.twizmwaz.cardinal.util.ChatUtils;
-import in.twizmwaz.cardinal.util.TeamUtils;
+import in.twizmwaz.cardinal.util.ChatUtil;
+import in.twizmwaz.cardinal.util.Teams;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -46,7 +46,7 @@ public class Tutorial implements Module {
         if (GameHandler.getGameHandler().getMatch().getModules().getModules(Tutorial.class).size() > 0) {
             ItemStack emerald = new ItemStack(Material.EMERALD);
             ItemMeta meta = emerald.getItemMeta();
-            meta.setDisplayName(ChatColor.GOLD + new LocalizedChatMessage(ChatConstant.UI_TUTORIAL_VIEW).getMessage(ChatUtils.getLocale(player)));
+            meta.setDisplayName(ChatColor.GOLD + new LocalizedChatMessage(ChatConstant.UI_TUTORIAL_VIEW).getMessage(ChatUtil.getLocale(player)));
             emerald.setItemMeta(meta);
             return emerald;
         }
@@ -71,7 +71,10 @@ public class Tutorial implements Module {
 
     @EventHandler
     public void onPlayerRightClick(PlayerInteractEvent event) {
-        boolean condition = TeamUtils.getTeamByPlayer(event.getPlayer()).isObserver() && event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType().equals(Material.EMERALD);
+        boolean condition = Teams.getTeamByPlayer(event.getPlayer()).isPresent()
+                && Teams.getTeamByPlayer(event.getPlayer()).get().isObserver()
+                && event.getPlayer().getItemInHand() != null
+                && event.getPlayer().getItemInHand().getType().equals(Material.EMERALD);
 
         if (!this.displayHandlerMap.containsKey(event.getPlayer())) {
             this.displayHandlerMap.put(event.getPlayer(), new DisplayHandler(event.getPlayer(), this));
@@ -87,7 +90,7 @@ public class Tutorial implements Module {
 
     @EventHandler
     public void onPlayerChangeTeam(PlayerChangeTeamEvent event) {
-        if (event.getNewTeam().isObserver()) {
+        if (event.getNewTeam().isPresent() && event.getNewTeam().get().isObserver()) {
             this.displayHandlerMap.remove(event.getPlayer());
         }
     }

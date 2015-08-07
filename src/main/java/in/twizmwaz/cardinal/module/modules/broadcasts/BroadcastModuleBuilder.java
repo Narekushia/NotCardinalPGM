@@ -4,16 +4,15 @@ import in.twizmwaz.cardinal.match.Match;
 import in.twizmwaz.cardinal.module.ModuleBuilder;
 import in.twizmwaz.cardinal.module.ModuleCollection;
 import in.twizmwaz.cardinal.module.modules.broadcasts.BroadcastModule.BroadcastType;
-import in.twizmwaz.cardinal.util.NumUtils;
-import in.twizmwaz.cardinal.util.StringUtils;
+import in.twizmwaz.cardinal.util.Numbers;
+import in.twizmwaz.cardinal.util.Strings;
 import org.bukkit.ChatColor;
 import org.jdom2.Element;
 
 public class BroadcastModuleBuilder implements ModuleBuilder {
-    @SuppressWarnings("unchecked")
     @Override
-    public ModuleCollection load(Match match) {
-        ModuleCollection results = new ModuleCollection();
+    public ModuleCollection<BroadcastModule> load(Match match) {
+        ModuleCollection<BroadcastModule> results = new ModuleCollection<>();
         for (Element broadcast : match.getDocument().getRootElement().getChildren("broadcasts")) {
             for (Element element : broadcast.getChildren("tip")) {
                 String message;
@@ -21,12 +20,12 @@ public class BroadcastModuleBuilder implements ModuleBuilder {
                 int every = -1;
                 int count = 1;
                 message = ChatColor.translateAlternateColorCodes('`', element.getText());
-                timeAfter = StringUtils.timeStringToSeconds(element.getAttributeValue("after"));
+                timeAfter = Strings.timeStringToSeconds(element.getAttributeValue("after"));
                 if (element.getAttributeValue("every") != null) {
-                    every = StringUtils.timeStringToSeconds(element.getAttributeValue("every"));
+                    every = Strings.timeStringToSeconds(element.getAttributeValue("every"));
                 }
                 if (element.getAttributeValue("count") != null) {
-                    count = NumUtils.parseInt(element.getAttributeValue("count"));
+                    count = Numbers.parseInt(element.getAttributeValue("count"));
                 } else if (every >= 1) {
                     count = (int) Double.POSITIVE_INFINITY;
                 }
@@ -38,12 +37,12 @@ public class BroadcastModuleBuilder implements ModuleBuilder {
                 int every = -1;
                 int count = 1;
                 message = ChatColor.translateAlternateColorCodes('`', element.getText());
-                timeAfter = StringUtils.timeStringToSeconds(element.getAttributeValue("after"));
+                timeAfter = Strings.timeStringToSeconds(element.getAttributeValue("after"));
                 if (element.getAttributeValue("every") != null) {
-                    every = StringUtils.timeStringToSeconds(element.getAttributeValue("every"));
+                    every = Strings.timeStringToSeconds(element.getAttributeValue("every"));
                 }
                 if (element.getAttributeValue("count") != null) {
-                    count = NumUtils.parseInt(element.getAttributeValue("count"));
+                    count = Numbers.parseInt(element.getAttributeValue("count"));
                 } else if (every >= 1) {
                     count = (int) Double.POSITIVE_INFINITY;
                 }

@@ -1,11 +1,13 @@
 package in.twizmwaz.cardinal.module.modules.appliedRegion.type;
 
+import com.google.common.base.Optional;
 import in.twizmwaz.cardinal.module.modules.appliedRegion.AppliedRegion;
 import in.twizmwaz.cardinal.module.modules.filter.FilterModule;
 import in.twizmwaz.cardinal.module.modules.filter.FilterState;
 import in.twizmwaz.cardinal.module.modules.kit.Kit;
 import in.twizmwaz.cardinal.module.modules.regions.RegionModule;
-import in.twizmwaz.cardinal.util.TeamUtils;
+import in.twizmwaz.cardinal.module.modules.team.TeamModule;
+import in.twizmwaz.cardinal.util.Teams;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -22,7 +24,8 @@ public class KitRegion extends AppliedRegion {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerMove(PlayerMoveEvent event) {
-        if (event.isCancelled() || TeamUtils.getTeamByPlayer(event.getPlayer()).isObserver()) return;
+        Optional<TeamModule> team = Teams.getTeamByPlayer(event.getPlayer());
+        if (event.isCancelled() || (team.isPresent() && team.get().isObserver())) return;
         if (region.contains(event.getTo().toVector()) && !region.contains(event.getFrom().toVector()) && (filter == null || filter.evaluate(event.getPlayer(), event.getTo(), event).equals(FilterState.ALLOW))) {
             kit.apply(event.getPlayer());
         }
@@ -30,7 +33,8 @@ public class KitRegion extends AppliedRegion {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerMove(PlayerTeleportEvent event) {
-        if (event.isCancelled() || TeamUtils.getTeamByPlayer(event.getPlayer()).isObserver()) return;
+        Optional<TeamModule> team = Teams.getTeamByPlayer(event.getPlayer());
+        if (event.isCancelled() || (team.isPresent() && team.get().isObserver())) return;
         if (region.contains(event.getTo().toVector()) && !region.contains(event.getFrom().toVector()) && (filter == null || filter.evaluate(event.getPlayer(), event.getTo(), event).equals(FilterState.ALLOW))) {
             kit.apply(event.getPlayer());
         }

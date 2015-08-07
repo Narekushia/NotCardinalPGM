@@ -1,4 +1,4 @@
-NotCardinalPGM
+NotCardinalPGM [![Build Status](https://vps.alan736.ch/ci/job/NotCardinalPGM/badge/icon)](https://vps.alan736.ch/ci/job/NotCardinalPGM/)
 ======
 
 What is this ?
@@ -12,6 +12,8 @@ What I have changed from the original version
 2. Redirect statistics page on my server
 3. Custom MOTD
 4. Sound for monument modes
+
+*IMPORTANT :* Stats are temporarily disabled.
 
 Download
 ------

@@ -1,5 +1,6 @@
 package in.twizmwaz.cardinal.module.modules.classModule;
 
+import com.google.common.base.Optional;
 import in.twizmwaz.cardinal.GameHandler;
 import in.twizmwaz.cardinal.chat.ChatConstant;
 import in.twizmwaz.cardinal.chat.LocalizedChatMessage;
@@ -7,7 +8,8 @@ import in.twizmwaz.cardinal.event.CardinalSpawnEvent;
 import in.twizmwaz.cardinal.event.ClassChangeEvent;
 import in.twizmwaz.cardinal.module.Module;
 import in.twizmwaz.cardinal.module.modules.kit.Kit;
-import in.twizmwaz.cardinal.util.TeamUtils;
+import in.twizmwaz.cardinal.module.modules.team.TeamModule;
+import in.twizmwaz.cardinal.util.Teams;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -67,7 +69,8 @@ public class ClassModule implements Module {
     @EventHandler
     public void onClassChange(ClassChangeEvent event) {
         if (event.getClassModule().equals(this)) {
-            if (sticky && TeamUtils.getTeamByPlayer(event.getPlayer()) != null && !TeamUtils.getTeamByPlayer(event.getPlayer()).isObserver()) {
+            Optional<TeamModule> team = Teams.getTeamByPlayer(event.getPlayer());
+            if (sticky && team.isPresent() && !Teams.getTeamByPlayer(event.getPlayer()).get().isObserver()) {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.RED + new LocalizedChatMessage(ChatConstant.ERROR_NO_CLASS_CHANGE).getMessage(event.getPlayer().getLocale()));
             }

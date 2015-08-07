@@ -12,14 +12,14 @@ import in.twizmwaz.cardinal.event.MatchEndEvent;
 import in.twizmwaz.cardinal.event.MatchStartEvent;
 import in.twizmwaz.cardinal.event.PlayerChangeTeamEvent;
 import in.twizmwaz.cardinal.module.Module;
-import in.twizmwaz.cardinal.module.modules.chatChannels.ChatChannelModule;
+import in.twizmwaz.cardinal.module.modules.chatChannels.ChatChannel;
 import in.twizmwaz.cardinal.module.modules.chatChannels.GlobalChannel;
 import in.twizmwaz.cardinal.module.modules.matchTimer.MatchTimer;
 import in.twizmwaz.cardinal.module.modules.matchTranscript.MatchTranscript;
 import in.twizmwaz.cardinal.module.modules.team.TeamModule;
 import in.twizmwaz.cardinal.settings.Settings;
-import in.twizmwaz.cardinal.util.StringUtils;
-import in.twizmwaz.cardinal.util.TeamUtils;
+import in.twizmwaz.cardinal.util.Strings;
+import in.twizmwaz.cardinal.util.Teams;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.NameValuePair;
@@ -127,7 +127,7 @@ public class Stats implements Module {
      */
     @EventHandler
     public void onMatchEnd(MatchEndEvent event) {
-    	WinningTeam = event.getTeam().getName();
+    	// WinningTeam = event.getTeam().getName();
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (Settings.getSettingByName("Stats") != null && Settings.getSettingByName("Stats").getValueByPlayer(player).getValue().equalsIgnoreCase("on")) {
                 player.sendMessage(ChatColor.GRAY + "Kills: " + ChatColor.GREEN + getKillsByPlayer(player) + ChatColor.AQUA + " | " + ChatColor.GRAY + "Deaths: " + ChatColor.DARK_RED + getDeathsByPlayer(player) + ChatColor.AQUA + " | " + ChatColor.GRAY + "KD: " + ChatColor.GOLD + (Math.round(getKdByPlayer(player) / 100.0) * 100.0));
@@ -137,13 +137,13 @@ public class Stats implements Module {
         if (Cardinal.getInstance().getConfig().getBoolean("html.upload")) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(GameHandler.getGameHandler().getPlugin(), new Runnable() {
                 public void run() {
-                    ChatChannelModule global = GameHandler.getGameHandler().getMatch().getModules().getModule(GlobalChannel.class);
+                    ChatChannel global = GameHandler.getGameHandler().getMatch().getModules().getModule(GlobalChannel.class);
                     global.sendLocalizedMessage(new UnlocalizedChatMessage(ChatColor.GOLD + "{0}", ChatConstant.UI_MATCH_REPORT_UPLOAD.asMessage()));
                     String result = uploadStats();
                     if (result == null || result.contains("error"))
                         global.sendLocalizedMessage(new UnlocalizedChatMessage(ChatColor.RED + "{0}", ChatConstant.UI_MATCH_REPORT_FAILED.asMessage()));
                     else
-                        global.sendLocalizedMessage(new UnlocalizedChatMessage(ChatColor.GREEN + "{0}", ChatConstant.UI_MATCH_REPORT_SUCCESS.asMessage(new UnlocalizedChatMessage(result))));
+                        global.sendLocalizedMessage(new UnlocalizedChatMessage(ChatColor.GREEN + "{0}", ChatConstant.UI_MATCH_REPORT_SUCCESS.asMessage(new UnlocalizedChatMessage(ChatColor.UNDERLINE + result + ChatColor.RESET))));
                 }
             }, 20);
         }
@@ -151,7 +151,7 @@ public class Stats implements Module {
 
     @EventHandler
     public void onPlayerJoinTeam(PlayerChangeTeamEvent event) {
-        this.playerTeams.put(event.getPlayer(), event.getNewTeam());
+        // this.playerTeams.put(event.getPlayer(), event.getNewTeam());
     }
 
     @EventHandler
@@ -185,7 +185,7 @@ public class Stats implements Module {
         }
         for (Element element : document.getElementsContainingOwnText("%matchTime")) {
             // element.text(element.text().replace("%matchTime", Double.toString(GameHandler.getGameHandler().getMatch().getModules().getModule(MatchTimer.class).getEndTime())));
-            element.html(element.html().replace("%matchTime", StringUtils.formatTime(GameHandler.getGameHandler().getMatch().getModules().getModule(MatchTimer.class).getEndTime())));
+            element.html(element.html().replace("%matchTime", Strings.formatTime(GameHandler.getGameHandler().getMatch().getModules().getModule(MatchTimer.class).getEndTime())));
         }
         
         // Get map.png URL on maps.oc.tc
@@ -195,7 +195,7 @@ public class Stats implements Module {
         document.getElementById("mapimage").appendElement("img").attr("class", "ui medium rounded image").attr("src", MapURL).attr("alt", "Map thumbnail");
         
         Element teams = document.getElementById("teams");
-        for (TeamModule team : TeamUtils.getTeams()) {
+        for (TeamModule team : Teams.getTeams()) {
         	
         	Element TeamGrid = teams.appendElement("div").attr("class", "ui grid");
         	Element TeamTitle =TeamGrid.appendElement("div").attr("class", "sixteen wide column").appendElement("span").attr("class", "ui large header").text(team.getName());

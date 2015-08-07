@@ -7,15 +7,15 @@ import in.twizmwaz.cardinal.module.modules.filter.FilterModule;
 import in.twizmwaz.cardinal.module.modules.filter.FilterModuleBuilder;
 import in.twizmwaz.cardinal.module.modules.regions.RegionModule;
 import in.twizmwaz.cardinal.module.modules.regions.RegionModuleBuilder;
-import in.twizmwaz.cardinal.util.NumUtils;
+import in.twizmwaz.cardinal.util.Numbers;
 import org.bukkit.ChatColor;
 import org.jdom2.Element;
 
 public class ProximityAlarmBuilder implements ModuleBuilder {
 
     @Override
-    public ModuleCollection load(Match match) {
-        ModuleCollection results = new ModuleCollection();
+    public ModuleCollection<ProximityAlarm> load(Match match) {
+        ModuleCollection<ProximityAlarm> results = new ModuleCollection<>();
         for (Element element : match.getDocument().getRootElement().getChildren("proximity-alarms")) {
             for (Element subElement : element.getChildren("proximity-alarm")) {
                 String message = null;
@@ -27,9 +27,9 @@ public class ProximityAlarmBuilder implements ModuleBuilder {
                 if (message != null) message = ChatColor.translateAlternateColorCodes('`', message);
                 int flareRadius = 4;
                 if (subElement.getAttributeValue("flare-radius") != null) {
-                    flareRadius = NumUtils.parseInt(subElement.getAttributeValue("flare-radius"));
+                    flareRadius = Numbers.parseInt(subElement.getAttributeValue("flare-radius"));
                 } else if (element.getAttributeValue("flare-radius") != null) {
-                    flareRadius = NumUtils.parseInt(element.getAttributeValue("flare-radius"));
+                    flareRadius = Numbers.parseInt(element.getAttributeValue("flare-radius"));
                 }
                 RegionModule region = null;
                 if (subElement.getChild("region") != null) {

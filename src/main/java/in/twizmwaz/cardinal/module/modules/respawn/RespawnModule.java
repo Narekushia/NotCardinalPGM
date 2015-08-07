@@ -1,5 +1,6 @@
 package in.twizmwaz.cardinal.module.modules.respawn;
 
+import com.google.common.base.Optional;
 import in.twizmwaz.cardinal.Cardinal;
 import in.twizmwaz.cardinal.GameHandler;
 import in.twizmwaz.cardinal.chat.ChatConstant;
@@ -16,9 +17,9 @@ import in.twizmwaz.cardinal.module.modules.classModule.ClassModule;
 import in.twizmwaz.cardinal.module.modules.spawn.SpawnModule;
 import in.twizmwaz.cardinal.module.modules.team.TeamModule;
 import in.twizmwaz.cardinal.module.modules.tutorial.Tutorial;
-import in.twizmwaz.cardinal.util.ItemUtils;
-import in.twizmwaz.cardinal.util.PlayerUtils;
-import in.twizmwaz.cardinal.util.TeamUtils;
+import in.twizmwaz.cardinal.util.Items;
+import in.twizmwaz.cardinal.util.Players;
+import in.twizmwaz.cardinal.util.Teams;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -33,7 +34,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 public class RespawnModule implements Module {
 
@@ -49,14 +50,13 @@ public class RespawnModule implements Module {
     }
 
     @EventHandler
-    public void onPgmSpawn(CardinalSpawnEvent event) {
-        try {
-            if (!TeamUtils.getTeamByPlayer(event.getPlayer()).isObserver() && match.isRunning()) {
-                event.getPlayer().setGameMode(GameMode.SURVIVAL);
-            }
-            event.getPlayer().updateInventory();
-        } catch (NullPointerException e) {
+    public void onCardinalSpawn(CardinalSpawnEvent event) {
+        Optional<TeamModule> team = Teams.getTeamByPlayer(event.getPlayer());
+        if (((team.isPresent() && !team.get().isObserver()) || !team.isPresent()) && match.isRunning()) {
+            event.getPlayer().setGameMode(GameMode.SURVIVAL);
         }
+        event.getPlayer().updateInventory();
+
     }
 
     @EventHandler(priority = EventPriority.LOW)
@@ -66,10 +66,10 @@ public class RespawnModule implements Module {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInitLogin(PlayerInitialSpawnEvent event) {
-        TeamModule teamModule = TeamUtils.getTeamById("observers");
+        Optional<TeamModule> teamModule = Teams.getTeamById("observers");
         ModuleCollection<SpawnModule> modules = new ModuleCollection<SpawnModule>();
         for (SpawnModule spawnModule : match.getModules().getModules(SpawnModule.class)) {
-            if (spawnModule.getTeam() == teamModule) modules.add(spawnModule);
+            if (spawnModule.getTeam() == teamModule.orNull()) modules.add(spawnModule);
         }
         SpawnModule chosen = modules.getRandom();
         event.setSpawnLocation(chosen.getLocation());
@@ -78,49 +78,49 @@ public class RespawnModule implements Module {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        PlayerUtils.resetPlayer(event.getPlayer());
-        CardinalSpawnEvent spawnEvent = new CardinalSpawnEvent(event.getPlayer(), (SpawnModule) event.getPlayer().getMetadata("initSpawn").get(0).value(), TeamUtils.getTeamById("observers"));
+        Players.resetPlayer(event.getPlayer());
+        CardinalSpawnEvent spawnEvent = new CardinalSpawnEvent(event.getPlayer(), (SpawnModule) event.getPlayer().getMetadata("initSpawn").get(0).value(), Teams.getTeamById("observers").orNull());
         Bukkit.getServer().getPluginManager().callEvent(spawnEvent);
     }
 
     @EventHandler
     public void onMinecraftRespawn(PlayerRespawnEvent event) {
         if (match.getState().equals(MatchState.PLAYING)) {
-            TeamModule teamModule = TeamUtils.getTeamByPlayer(event.getPlayer());
+            Optional<TeamModule> teamModule = Teams.getTeamByPlayer(event.getPlayer());
             ModuleCollection<SpawnModule> modules = new ModuleCollection<SpawnModule>();
             for (SpawnModule spawnModule : match.getModules().getModules(SpawnModule.class)) {
-                if (spawnModule.getTeam() == teamModule) modules.add(spawnModule);
+                if (spawnModule.getTeam() == teamModule.orNull()) modules.add(spawnModule);
             }
             SpawnModule chosen = modules.getRandom();
-            CardinalSpawnEvent spawnEvent = new CardinalSpawnEvent(event.getPlayer(), chosen, TeamUtils.getTeamByPlayer(event.getPlayer()));
+            CardinalSpawnEvent spawnEvent = new CardinalSpawnEvent(event.getPlayer(), chosen, Teams.getTeamByPlayer(event.getPlayer()).orNull());
             Bukkit.getServer().getPluginManager().callEvent(spawnEvent);
             if (!spawnEvent.isCancelled()) {
                 event.setRespawnLocation(chosen.getLocation());
             }
         } else {
-            TeamModule teamModule = TeamUtils.getTeamById("observers");
+            Optional<TeamModule> teamModule = Teams.getTeamById("observers");
             ModuleCollection<SpawnModule> modules = new ModuleCollection<SpawnModule>();
             for (SpawnModule spawnModule : match.getModules().getModules(SpawnModule.class)) {
-                if (spawnModule.getTeam() == teamModule) modules.add(spawnModule);
+                if (spawnModule.getTeam() == teamModule.orNull()) modules.add(spawnModule);
             }
             SpawnModule chosen = modules.getRandom();
-            CardinalSpawnEvent spawnEvent = new CardinalSpawnEvent(event.getPlayer(), chosen, TeamUtils.getTeamById("observers"));
+            CardinalSpawnEvent spawnEvent = new CardinalSpawnEvent(event.getPlayer(), chosen, Teams.getTeamById("observers").get());
             Bukkit.getServer().getPluginManager().callEvent(spawnEvent);
             if (!spawnEvent.isCancelled()) {
                 Player player = event.getPlayer();
                 event.setRespawnLocation(chosen.getLocation());
-                PlayerUtils.resetPlayer(player);
+                Players.resetPlayer(player);
                 player.getInventory().setItem(0, new ItemStack(Material.COMPASS));
-                ItemStack howTo = ItemUtils.createBook(Material.WRITTEN_BOOK, 1, ChatColor.AQUA.toString() + ChatColor.BOLD + "Coming Soon", ChatColor.GOLD + "CardinalPGM");
+                ItemStack howTo = Items.createBook(Material.WRITTEN_BOOK, 1, ChatColor.AQUA.toString() + ChatColor.BOLD + "Coming Soon", ChatColor.GOLD + "CardinalPGM");
                 player.getInventory().setItem(1, howTo);
                 if (!GameHandler.getGameHandler().getMatch().getState().equals(MatchState.ENDED)) {
-                    ItemStack picker = ItemUtils.createItem(Material.LEATHER_HELMET, 1, (short) 0,
+                    ItemStack picker = Items.createItem(Material.LEATHER_HELMET, 1, (short) 0,
                             ChatColor.GREEN + "" + ChatColor.BOLD + (GameHandler.getGameHandler().getMatch().getModules().getModule(ClassModule.class) != null ? new LocalizedChatMessage(ChatConstant.UI_TEAM_CLASS_SELECTION).getMessage(player.getLocale()) : new LocalizedChatMessage(ChatConstant.UI_TEAM_SELECTION).getMessage(player.getLocale())),
-                            Arrays.asList(ChatColor.DARK_PURPLE + new LocalizedChatMessage(ChatConstant.UI_TEAM_JOIN_TIP).getMessage(player.getLocale())));
+                            Collections.singletonList(ChatColor.DARK_PURPLE + new LocalizedChatMessage(ChatConstant.UI_TEAM_JOIN_TIP).getMessage(player.getLocale())));
                     player.getInventory().setItem(2, picker);
                 }
                 if (player.hasPermission("tnt.defuse")) {
-                    ItemStack shears = ItemUtils.createItem(Material.SHEARS, 1, (short) 0, ChatColor.RED + new LocalizedChatMessage(ChatConstant.UI_TNT_DEFUSER).getMessage(player.getLocale()));
+                    ItemStack shears = Items.createItem(Material.SHEARS, 1, (short) 0, ChatColor.RED + new LocalizedChatMessage(ChatConstant.UI_TNT_DEFUSER).getMessage(player.getLocale()));
                     player.getInventory().setItem(5, shears);
                 }
                 player.teleport(chosen.getLocation());
@@ -132,15 +132,15 @@ public class RespawnModule implements Module {
     @EventHandler
     public void onMatchStart(MatchStartEvent event) {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!TeamUtils.getTeamByPlayer(player).isObserver()) {
-                PlayerUtils.resetPlayer(player);
-                TeamModule teamModule = TeamUtils.getTeamByPlayer(player);
+            Optional<TeamModule> team = Teams.getTeamByPlayer(player);
+            if (!team.isPresent() || !team.get().isObserver()) {
+                Players.resetPlayer(player);
                 ModuleCollection<SpawnModule> modules = new ModuleCollection<SpawnModule>();
                 for (SpawnModule spawnModule : match.getModules().getModules(SpawnModule.class)) {
-                    if (spawnModule.getTeam() == teamModule) modules.add(spawnModule);
+                    if (spawnModule.getTeam() == team.orNull()) modules.add(spawnModule);
                 }
                 SpawnModule chosen = modules.getRandom();
-                CardinalSpawnEvent spawnEvent = new CardinalSpawnEvent(player, chosen, TeamUtils.getTeamByPlayer(player));
+                CardinalSpawnEvent spawnEvent = new CardinalSpawnEvent(player, chosen, Teams.getTeamByPlayer(player).orNull());
                 Bukkit.getServer().getPluginManager().callEvent(spawnEvent);
                 if (!spawnEvent.isCancelled()) {
                     player.teleport(chosen.getLocation());
@@ -152,28 +152,28 @@ public class RespawnModule implements Module {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCycleComplete(CycleCompleteEvent event) {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            TeamModule teamModule = TeamUtils.getTeamByPlayer(player);
+            Optional<TeamModule> teamModule = Teams.getTeamByPlayer(player);
             ModuleCollection<SpawnModule> modules = new ModuleCollection<SpawnModule>();
             for (SpawnModule spawnModule : match.getModules().getModules(SpawnModule.class)) {
-                if (spawnModule.getTeam() == teamModule) modules.add(spawnModule);
+                if (spawnModule.getTeam() == teamModule.orNull()) modules.add(spawnModule);
             }
             SpawnModule chosen = modules.getRandom();
-            CardinalSpawnEvent spawnEvent = new CardinalSpawnEvent(player, chosen, TeamUtils.getTeamById("observers"));
+            CardinalSpawnEvent spawnEvent = new CardinalSpawnEvent(player, chosen, Teams.getTeamById("observers").get());
             Bukkit.getServer().getPluginManager().callEvent(spawnEvent);
             if (!spawnEvent.isCancelled()) {
-                PlayerUtils.resetPlayer(player);
+                Players.resetPlayer(player);
                 player.getInventory().setItem(0, new ItemStack(Material.COMPASS));
-                ItemStack howTo = ItemUtils.createBook(Material.WRITTEN_BOOK, 1, ChatColor.AQUA.toString() + ChatColor.BOLD + "Coming Soon", ChatColor.GOLD + "CardinalPGM");
+                ItemStack howTo = Items.createBook(Material.WRITTEN_BOOK, 1, ChatColor.AQUA.toString() + ChatColor.BOLD + "Coming Soon", ChatColor.GOLD + "CardinalPGM");
                 player.getInventory().setItem(1, howTo);
                 if (!GameHandler.getGameHandler().getMatch().getState().equals(MatchState.ENDED)) {
-                    ItemStack picker = ItemUtils.createItem(Material.LEATHER_HELMET, 1, (short) 0,
+                    ItemStack picker = Items.createItem(Material.LEATHER_HELMET, 1, (short) 0,
                             ChatColor.GREEN + "" + ChatColor.BOLD + (GameHandler.getGameHandler().getMatch().getModules().getModule(ClassModule.class) != null ? new LocalizedChatMessage(ChatConstant.UI_TEAM_CLASS_SELECTION).getMessage(player.getLocale()) : new LocalizedChatMessage(ChatConstant.UI_TEAM_SELECTION).getMessage(player.getLocale())),
-                            Arrays.asList(ChatColor.DARK_PURPLE + new LocalizedChatMessage(ChatConstant.UI_TEAM_JOIN_TIP).getMessage(player.getLocale())));
+                            Collections.singletonList(ChatColor.DARK_PURPLE + new LocalizedChatMessage(ChatConstant.UI_TEAM_JOIN_TIP).getMessage(player.getLocale())));
                     player.getInventory().setItem(2, picker);
                 }
                 player.getInventory().setItem(3, Tutorial.getEmerald(player));
                 if (player.hasPermission("tnt.defuse")) {
-                    ItemStack shears = ItemUtils.createItem(Material.SHEARS, 1, (short) 0, ChatColor.RED + new LocalizedChatMessage(ChatConstant.UI_TNT_DEFUSER).getMessage(player.getLocale()));
+                    ItemStack shears = Items.createItem(Material.SHEARS, 1, (short) 0, ChatColor.RED + new LocalizedChatMessage(ChatConstant.UI_TNT_DEFUSER).getMessage(player.getLocale()));
                     player.getInventory().setItem(5, shears);
                 }
                 player.teleport(chosen.getLocation());
@@ -185,30 +185,30 @@ public class RespawnModule implements Module {
     public void onTeamChange(PlayerChangeTeamEvent event) {
         if (event.getOldTeam() == null) {
             event.getPlayer().setMaxHealth(20);
-            PlayerUtils.resetPlayer(event.getPlayer());
-            TeamModule teamModule = event.getNewTeam();
+            Players.resetPlayer(event.getPlayer());
+            Optional<TeamModule> teamModule = event.getNewTeam();
             ModuleCollection<SpawnModule> modules = new ModuleCollection<SpawnModule>();
             for (SpawnModule spawnModule : match.getModules().getModules(SpawnModule.class)) {
-                if (spawnModule.getTeam() == teamModule) modules.add(spawnModule);
+                if (spawnModule.getTeam() == teamModule.orNull()) modules.add(spawnModule);
             }
             SpawnModule chosen = modules.getRandom();
-            CardinalSpawnEvent spawnEvent = new CardinalSpawnEvent(event.getPlayer(), chosen, event.getNewTeam());
+            CardinalSpawnEvent spawnEvent = new CardinalSpawnEvent(event.getPlayer(), chosen, event.getNewTeam().orNull());
             Bukkit.getServer().getPluginManager().callEvent(spawnEvent);
             if (!spawnEvent.isCancelled()) {
                 event.getPlayer().teleport(chosen.getLocation());
             }
         } else if (match.getState().equals(MatchState.PLAYING)) {
-            if (!event.getNewTeam().isObserver()) {
-                if (event.getOldTeam().isObserver()) {
+            if (!event.getNewTeam().isPresent() || !event.getNewTeam().get().isObserver()) {
+                if (event.getOldTeam().isPresent() && event.getOldTeam().get().isObserver()) {
                     event.getPlayer().setMaxHealth(20);
-                    PlayerUtils.resetPlayer(event.getPlayer());
-                    TeamModule teamModule = event.getNewTeam();
+                    Players.resetPlayer(event.getPlayer());
+                    Optional<TeamModule> teamModule = event.getNewTeam();
                     ModuleCollection<SpawnModule> modules = new ModuleCollection<SpawnModule>();
                     for (SpawnModule spawnModule : match.getModules().getModules(SpawnModule.class)) {
-                        if (spawnModule.getTeam() == teamModule) modules.add(spawnModule);
+                        if (spawnModule.getTeam() == teamModule.orNull()) modules.add(spawnModule);
                     }
                     SpawnModule chosen = modules.getRandom();
-                    CardinalSpawnEvent spawnEvent = new CardinalSpawnEvent(event.getPlayer(), chosen, event.getNewTeam());
+                    CardinalSpawnEvent spawnEvent = new CardinalSpawnEvent(event.getPlayer(), chosen, event.getNewTeam().orNull());
                     Bukkit.getServer().getPluginManager().callEvent(spawnEvent);
                     if (!spawnEvent.isCancelled()) {
                         event.getPlayer().teleport(chosen.getLocation());
@@ -218,12 +218,12 @@ public class RespawnModule implements Module {
                     event.getPlayer().setHealth(0);
                 }
             } else {
-                TeamModule teamModule = event.getNewTeam();
+                Optional<TeamModule> teamModule = event.getNewTeam();
                 SpawnModule spawn = null;
                 for (SpawnModule spawnModule : match.getModules().getModules(SpawnModule.class)) {
-                    if (spawnModule.getTeam() == teamModule) spawn = spawnModule;
+                    if (spawnModule.getTeam() == teamModule.orNull()) spawn = spawnModule;
                 }
-                CardinalSpawnEvent spawnEvent = new CardinalSpawnEvent(event.getPlayer(), spawn, event.getNewTeam());
+                CardinalSpawnEvent spawnEvent = new CardinalSpawnEvent(event.getPlayer(), spawn, event.getNewTeam().orNull());
                 Bukkit.getServer().getPluginManager().callEvent(spawnEvent);
                 if (!spawnEvent.isCancelled()) {
                     event.getPlayer().setMetadata("teamChange", new FixedMetadataValue(GameHandler.getGameHandler().getPlugin(), "teamChange"));
