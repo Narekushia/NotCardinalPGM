@@ -127,7 +127,7 @@ public class Stats implements Module {
      */
     @EventHandler
     public void onMatchEnd(MatchEndEvent event) {
-    	// WinningTeam = event.getTeam().getName();
+    	WinningTeam = event.getTeam().get().getName();
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (Settings.getSettingByName("Stats") != null && Settings.getSettingByName("Stats").getValueByPlayer(player).getValue().equalsIgnoreCase("on")) {
                 player.sendMessage(ChatColor.GRAY + "Kills: " + ChatColor.GREEN + getKillsByPlayer(player) + ChatColor.AQUA + " | " + ChatColor.GRAY + "Deaths: " + ChatColor.DARK_RED + getDeathsByPlayer(player) + ChatColor.AQUA + " | " + ChatColor.GRAY + "KD: " + ChatColor.GOLD + (Math.round(getKdByPlayer(player) / 100.0) * 100.0));
@@ -151,7 +151,7 @@ public class Stats implements Module {
 
     @EventHandler
     public void onPlayerJoinTeam(PlayerChangeTeamEvent event) {
-        // this.playerTeams.put(event.getPlayer(), event.getNewTeam());
+        this.playerTeams.put(event.getPlayer(), event.getNewTeam().get());
     }
 
     @EventHandler
@@ -184,7 +184,6 @@ public class Stats implements Module {
             element.html(element.html().replace("%deaths", Integer.toString(getTotalDeaths())));
         }
         for (Element element : document.getElementsContainingOwnText("%matchTime")) {
-            // element.text(element.text().replace("%matchTime", Double.toString(GameHandler.getGameHandler().getMatch().getModules().getModule(MatchTimer.class).getEndTime())));
             element.html(element.html().replace("%matchTime", Strings.formatTime(GameHandler.getGameHandler().getMatch().getModules().getModule(MatchTimer.class).getEndTime())));
         }
         
@@ -222,9 +221,11 @@ public class Stats implements Module {
                 }
             }
         }
+        /*
         Element transcript = document.getElementById("transcript");
         if (GameHandler.getGameHandler().getMatch().getModules().getModule(MatchTranscript.class).getLog() != null)
             transcript.appendElement("pre").text(GameHandler.getGameHandler().getMatch().getModules().getModule(MatchTranscript.class).getLog());
+        */
         Writer writer = new PrintWriter(file);
         writer.write(document.html());
         writer.close();

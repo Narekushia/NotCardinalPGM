@@ -58,6 +58,8 @@ import in.twizmwaz.cardinal.module.modules.snowflakes.SnowflakesBuilder;
 import in.twizmwaz.cardinal.module.modules.sound.SoundModuleBuilder;
 import in.twizmwaz.cardinal.module.modules.spawn.SpawnModuleBuilder;
 import in.twizmwaz.cardinal.module.modules.startTimer.StartTimerBuilder;
+import in.twizmwaz.cardinal.module.modules.stats.Stats;
+import in.twizmwaz.cardinal.module.modules.stats.StatsBuilder;
 import in.twizmwaz.cardinal.module.modules.tasker.TaskerModuleBuilder;
 import in.twizmwaz.cardinal.module.modules.team.TeamModuleBuilder;
 import in.twizmwaz.cardinal.module.modules.teamManager.TeamManagerModuleBuilder;
@@ -76,6 +78,7 @@ import in.twizmwaz.cardinal.module.modules.visibility.VisibilityBuilder;
 import in.twizmwaz.cardinal.module.modules.wildcard.WildCardBuilder;
 import in.twizmwaz.cardinal.module.modules.wools.WoolObjectiveBuilder;
 import in.twizmwaz.cardinal.module.modules.worldFreeze.WorldFreezeBuilder;
+
 import org.bukkit.Bukkit;
 
 import java.lang.reflect.InvocationTargetException;
@@ -162,7 +165,8 @@ public class ModuleFactory {
             InvisibleBlockBuilder.class,
             ItemDropBuilder.class,
             GuiKeepModuleBuilder.class,
-            RankModuleBuilder.class
+            RankModuleBuilder.class,
+            StatsBuilder.class,
     };
     private final List<ModuleBuilder> builders;
 

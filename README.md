@@ -13,7 +13,7 @@ What I have changed from the original version
 3. Custom MOTD
 4. Sound for monument modes
 
-**IMPORTANT :** Stats are temporarily disabled.
+**IMPORTANT :** Match Transcript is temporarily disabled.
 
 Download
 ------
