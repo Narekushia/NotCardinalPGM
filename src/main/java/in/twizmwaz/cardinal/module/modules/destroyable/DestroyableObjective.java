@@ -376,14 +376,14 @@ public class DestroyableObjective implements GameObjective {
             }
         }
         if (toCombine.size() == 0) {
-            toCombine.add(ChatColor.DARK_AQUA + new LocalizedChatMessage(ChatConstant.MISC_ENEMY).getMessage(locale));
+            toCombine.add(new LocalizedChatMessage(ChatConstant.MISC_ENEMY).getMessage(locale));
         }
         if (toCombine.size() < playersCompleted.keySet().size()) {
-            toCombine.add(ChatColor.DARK_AQUA + new LocalizedChatMessage(ChatConstant.MISC_OTHERS).getMessage(locale));
+            toCombine.add(new LocalizedChatMessage(ChatConstant.MISC_OTHERS).getMessage(locale));
         }
         whoDestroyed = toCombine.get(0);
         for (int i = 1; i < toCombine.size(); i++) {
-            whoDestroyed += ChatColor.GRAY + (i == toCombine.size() - 1 ? " " + new LocalizedChatMessage(ChatConstant.MISC_AND).getMessage(locale) + " " : ", ") + toCombine.get(i);
+            whoDestroyed += ChatColor.WHITE + (i == toCombine.size() - 1 ? " " + new LocalizedChatMessage(ChatConstant.MISC_AND).getMessage(locale) + " " : ", ") + toCombine.get(i);
         }
         return whoDestroyed;
     }
@@ -402,7 +402,7 @@ public class DestroyableObjective implements GameObjective {
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Optional<TeamModule> playerTeam = Teams.getTeamByPlayer(event.getPlayer());
-        if (GameHandler.getGameHandler().getMatch().isRunning() && !this.isTouched() && (!!playerTeam.isPresent() || !playerTeam.get().isObserver()) && playerTeam.orNull() != this.team) {
+        if (GameHandler.getGameHandler().getMatch().isRunning() && !this.isTouched() && ((playerTeam.isPresent() && !playerTeam.get().isObserver() && playerTeam.orNull() != this.team) || !playerTeam.isPresent())) {
             if (event.getPlayer().getLocation().toVector().distance(region.getCenterBlock().getVector()) < proximity) {
                 double old = proximity;
                 proximity = event.getPlayer().getLocation().toVector().distance(region.getCenterBlock().getVector());
