@@ -106,6 +106,8 @@ public enum ChatConstant {
     ERROR_INVALID_ARGUMENTS("error.invalidArguments"),
     ERROR_TOO_FEW_ARGUMENTS("error.tooFewArguments"),
     ERROR_CANNOT_CALCULATE_SCORES("error.cannotCalculateScores"),
+    ERROR_PROXIMITY_OBS_ONLY("error.proximityObsOnly"),
+    ERROR_PROXIMITY_NO_SCORING("error.proximityNoScoring"),
 
     GENERIC_MAP_SET("generic.mapSet"),
     GENERIC_MARKED_FOR_RELOADING("generic.markedForReloading"),
@@ -194,6 +196,10 @@ public enum ChatConstant {
     GENERIC_OBJECTIVE_IS_UNTOUCHED("generic.objectiveIsUntouched"),
     GENERIC_OBJECTIVE_WAS_TOUCHED("generic.objectiveWasTouched"),
     GENERIC_OBJECTIVE_WAS_COMPLETED("generic.objectiveWasCompleted"),
+    GENERIC_MUTED("generic.muted"),
+    GENERIC_MUTED_BY("generic.mutedBy"),
+    GENERIC_UNMUTED("generic.unmuted"),
+    GENERIC_UNMUTED_BY("generic.unmutedBy"),
 
     MISC_ENEMY("misc.enemy"),
     MISC_FATE("misc.fate"),

@@ -8,7 +8,6 @@ import com.sk89q.minecraft.util.commands.CommandUsageException;
 import com.sk89q.minecraft.util.commands.CommandsManager;
 import com.sk89q.minecraft.util.commands.MissingNestedCommandException;
 import com.sk89q.minecraft.util.commands.WrappedCommandException;
-
 import in.twizmwaz.cardinal.chat.ChatConstant;
 import in.twizmwaz.cardinal.chat.LocaleHandler;
 import in.twizmwaz.cardinal.chat.LocalizedChatMessage;
@@ -32,8 +31,8 @@ import in.twizmwaz.cardinal.command.RotationCommands;
 import in.twizmwaz.cardinal.command.ScoreCommand;
 import in.twizmwaz.cardinal.command.SettingCommands;
 import in.twizmwaz.cardinal.command.SnowflakesCommand;
-import in.twizmwaz.cardinal.command.StartAndEndCommand;
 import in.twizmwaz.cardinal.command.StatsCommand;
+import in.twizmwaz.cardinal.command.StartAndEndCommand;
 import in.twizmwaz.cardinal.command.TeamCommands;
 import in.twizmwaz.cardinal.command.TeleportCommands;
 import in.twizmwaz.cardinal.command.TimeLimitCommand;
@@ -45,7 +44,6 @@ import in.twizmwaz.cardinal.settings.SettingValue;
 import in.twizmwaz.cardinal.util.ChatUtil;
 import in.twizmwaz.cardinal.util.DomUtil;
 import in.twizmwaz.cardinal.util.Numbers;
-
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -139,8 +137,8 @@ public class Cardinal extends JavaPlugin {
         cmdRegister.register(RotationCommands.class);
         cmdRegister.register(ScoreCommand.class);
         cmdRegister.register(SettingCommands.class);
-        cmdRegister.register(StatsCommand.class);
         cmdRegister.register(SnowflakesCommand.class);
+        cmdRegister.register(StatsCommand.class);
         cmdRegister.register(StartAndEndCommand.class);
         cmdRegister.register(TeamCommands.TeamParentCommand.class);
         cmdRegister.register(TeamCommands.class);
@@ -328,7 +326,9 @@ public class Cardinal extends JavaPlugin {
             return;
         }
 
-        Bukkit.getServer().setSpawnRadius(0); //Disable spawn protection
+        if (config.getBoolean("resetSpawnProtection") && Bukkit.getServer().getSpawnRadius() != 0) {
+            Bukkit.getServer().setSpawnRadius(0);
+        }
     }
 
     @Override

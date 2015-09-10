@@ -100,6 +100,8 @@
         <invalidArguments>Invalid arguments.</invalidArguments>
         <tooFewArguments>Too few arguments.</tooFewArguments>
         <cannotCalculateScores>Team scores cannot be calculated.</cannotCalculateScores>
+        <proximityObsOnly>The /proximity command is only available to observers.</proximityObsOnly>
+        <proximityNoScoring>There are no objectives that track proximity.</proximityNoScoring>
     </error>
     <generic>
         <mapSet>Next map set to {0}</mapSet>
@@ -190,7 +192,10 @@
         <objectiveIsUntouched>{0} is untouched!</objectiveIsUntouched>
         <objectiveWasTouched>{0} was touched!</objectiveWasTouched>
         <objectiveWasCompleted>{0} was completed!</objectiveWasCompleted>
->>>>>>> Refactor and localize all commands
+        <muted>You muted {0}</muted>
+        <mutedBy>You were muted by {0}</mutedBy>
+        <unmuted>You unmuted {0}</unmuted>
+        <unmutedBy>You were unmuted by {0}</unmutedBy>
     </generic>
     <misc>
         <enemy>the enemy</enemy>

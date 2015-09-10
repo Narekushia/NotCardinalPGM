@@ -4,11 +4,12 @@ deleteMatches: true
 displayMapLoadErrors: false
 custom-motd: true
 worldEditPermissions: true
-server-message: Isten Xudo
+server-message: Scrimmage Server
 motd-message: true
 cycle: -1
 matchTimeMillis: true
 observers-ready: true
+resetSpawnProtection: true
 html:
   upload: true
   transcriptMilliseconds: true

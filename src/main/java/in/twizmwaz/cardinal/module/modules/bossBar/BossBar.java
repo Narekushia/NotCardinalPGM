@@ -52,7 +52,7 @@ public class BossBar implements Module {
         }
         if (wither != null) {
             wither.name = checkMessageLength(message.getMessage(player.getLocale()));
-            wither.health = percent * 100F / wither.getMaxHealth();
+            wither.health = percent * 100F / wither.getMaxHealth() < 1 ? 1 : percent * 100F / wither.getMaxHealth();
         }
         updateWither(wither, player);
     }
@@ -111,7 +111,9 @@ public class BossBar implements Module {
     }
 
     private Location getWitherLocation(Player player) {
-        return player.getLocation().add(player.getEyeLocation().getDirection().multiply(ENTITY_DISTANCE));
+        Location loc = player.getEyeLocation();
+        loc.setPitch(loc.getPitch() - 20);
+        return player.getEyeLocation().add(loc.getDirection().multiply(ENTITY_DISTANCE));
     }
 
     private void destroy(Player player) {
